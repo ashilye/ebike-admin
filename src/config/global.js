@@ -1,5 +1,5 @@
 const global = {
-    BASE_URL:''
+    BASE_URL:'https://nbadmin.hyntech.net'
 }
 
 export default global

@@ -1,17 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import getters from './getters'
+import app from './modules/app'
 
 Vue.use(Vuex)
-const files = require.context('./modules', false, /\.js$/)
-const modules = {}
 
-files.keys().forEach((key) => {
-  modules[key.replace(/(\.\/|\.js)/g, '')] = files(key).default
-})
-Object.keys(modules).forEach((key) => {
-  modules[key]['namespaced'] = true
-})
 const store = new Vuex.Store({
-  modules,
+  modules: {
+    app
+  },
+  getters
 })
+
 export default store

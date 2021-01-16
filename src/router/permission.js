@@ -1,5 +1,5 @@
 import NProgress from "nprogress"
-
+import 'nprogress/nprogress.css' //这个样式必须引入
 import router from "../router"
 import store from "../store"
 //  获取角色信息，根据用户权限动态加载路由

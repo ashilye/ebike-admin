@@ -1,14 +1,14 @@
 <template>
   <div class="login-container">
-    <div class="login-content">
-      <div class="login-title">
-        <img src="@/assets/images/login/ic_police.png"/>
+    <div class="login-wrap">
+      <div class="login-header">
+        <img src="@/assets/images/login/police.png"/>
         <h1>平安电车管理系统</h1>
       </div>
-      <el-card class="login-card">
-        <div class="login-box">
+      <el-card>
+        <div class="login-content">
           <div class="login-form">
-            <h3 class="login-user">用户登录</h3>
+            <h2 class="login-user">用户登录</h2>
             <el-form ref="form" :model="form" label-width="80px" class="logon-form" :rules="rules">
               <el-form-item label="用户名" prop="userName">
                 <el-input v-model="form.userName" placeholder="请输入用户名">
@@ -22,25 +22,22 @@
                 </el-input>
               </el-form-item>
 
-
               <div class="login-code">
                 <el-form-item label="验证码" prop="code" placeholder="验证码">
                   <el-input v-model="form.code">
                     <i slot="prefix" class="el-icon-mouse"></i>
                   </el-input>
                 </el-form-item>
-                <div style="width: 50%" v-on:click="changeCode">
-                  <!-- 引入验证码组件 -->
-                  <s-identify :identifyCode="identifyCode"></s-identify>
-                </div>
 
+                <img class="img-code" v-bind:src="identifyCode" style="height:40px; width: 160px; cursor: pointer;" alt="点击更换"
+                     title="点击更换" v-on:click="handleCode"/>
                 <div>
-                  <i class="el-icon-refresh" v-on:click="changeCode"></i>
+                  <i class="el-icon-refresh" v-on:click="handleCode"></i>
                 </div>
               </div>
 
-              <el-form-item>
-                <el-button type="primary" v-on:click="submitForm('form')" style="width: 100% ">登录</el-button>
+              <el-form-item class="login-box">
+                <el-button type="primary" v-on:click="submitForm('form')" style="width: 100%">登录</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -55,7 +52,7 @@
           </div>
         </div>
       </el-card>
-      <div class="login-com">
+      <div class="login-footer">
         <img src="@/assets/images/login/hyn.jpg"/>
         <h3>Copyright © 2020 豫ICP备18006204号-1</h3>
       </div>
@@ -64,16 +61,13 @@
 </template>
 
 <script>
-import SIdentify from "@/components/common/identify";
-
+import {userLogin} from '@/api/userApi'
 
 export default {
-  components: {SIdentify},
   name: 'login',
   data() {
     return {
-      identifyCode:'QWER',
-      identifyCodes:'QWERTYUIOPASDFGHJKLZXCVBNM',
+      identifyCode: '',
       qrcode: require('@/assets/images/login/qrcode.jpg'),
       form: {
         userName: '',
@@ -89,124 +83,102 @@ export default {
           {required: true, message: '密码不能为空', trigger: 'blur'},
           {min: 3, max: 10, message: '密码3-10位', trigger: 'blur'}
         ],
-
-        code: [{required: true, validator: function (rule,value, callback){
-            if(!value){
-              return callback(new Error('请输入验证码'))
-            }else if(this.identifyCode === 'QWER'){
-              callback()
-            }else {
-              return callback(new Error('验证码不正确'))
-            }
-          },trigger: 'blur'}]
+        code: [
+          {required: true, message: '验证码不能为空', trigger: 'blur'},
+          {min: 4, max: 4, message: '验证码4位', trigger: 'blur'}
+        ],
       }
     }
   },
 
-  created() {
-
-  },
+  created() {},
   mounted() {
-    // 刷新页面就生成随机验证码
-    this.identifyCode = ''
-    this.makeCode(this.identifyCodes, 4)
+    this.handleCode()
   },
 
   methods: {
-    changeCode() {
-      this.identifyCode = ''
-      this.makeCode(this.identifyCodes, 4)
+    handleCode(){
+      this.identifyCode = 'https://nbadmin.hyntech.net/antitheft/login/getValidCode.do?temp=' + Math.random()
     },
 
-    // 生成一个随机整数  randomNum(0, 10) 0 到 10 的随机整数， 包含 0 和 10
-    randomNum (min, max) {
-      max = max + 1
-      return Math.floor(Math.random() * (max - min) + min)
+    handleLogin(params){
+      userLogin(params).then(res =>{
+        console.log(res)
+      })
     },
 
-    // 随机生成验证码字符串
-    makeCode (data, len) {
-      for (let i = 0; i < len; i++) {
-        this.identifyCode += data[this.randomNum(0, data.length - 1)]
-      }
-    },
+
 
     submitForm(formName) {
       // alert(this.form.userName + this.form.passWord)
-      console.log('用户名->',this.form.userName)
-      console.log('密码->',this.form.passWord)
-      console.log('验证码->',this.form.code)
+      console.log('用户名->', this.form.userName)
+      console.log('密码->', this.form.passWord)
+      console.log('验证码->', this.form.code)
       this.$refs[formName].validate(valid => {
         console.log(valid)
         if (valid) {
-          this.$router.push('/home')
+          // if (this.form.code !== this.identifyCode) {
+          //   this.$message.error('请输入正确的验证码')
+          //   return false
+          // }
+          //登录
+          //this.$router.push('/home')
+          this.handleLogin({
+            'userName':'cmsone',
+            'password':'cmsone',
+            'validcode':'KLSY',
+            'random':Math.random()
+          })
         } else {
           return false
         }
       })
     },
 
-    onUsual(){
+    onUsual() {
       this.qrcode = require('@/assets/images/login/qrcode.jpg')
     },
-    onPolice(){
+    onPolice() {
       this.qrcode = require('@/assets/images/login/qrcode.jpg')
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
-h1 {
-  font-weight: bold;
-  color: white;
-}
 
-h3 {
-  font-weight: normal;
-}
-
-/* 背景*/
 .login-container {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: url('~@/assets/images/login/login_head.jpg') fixed no-repeat;
+  background: url('~@/assets/images/login/head.jpg') fixed no-repeat;
   background-size: 100% 50%;
 }
 
-.login-content {
+.login-wrap {
   padding-top: 80px;
   position: absolute;
   width: 100%;
   height: 100%;
+
+  .el-card {
+    background: url('~@/assets/images/login/bg.png') center center fixed no-repeat;
+    background-size: cover;
+    margin: 30px 10px 50px 10px;
+    width: 50%;
+    height: 50%;
+    display: inline-block;
+  }
+
+  .login-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
 }
 
-/*card*/
-.login-card {
-  background: url('~@/assets/images/login/login_bg.png') center center fixed no-repeat;
-  background-size: cover;
-  margin: 30px 10px 50px 10px;
-  width: 50%;
-  height: 50%;
-  display: inline-block;
-}
-
-.login-box {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
-
-
-/* 标题*/
-.login-title {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 .login-user {
   font-weight: bold;
@@ -227,21 +199,56 @@ h3 {
   margin-left: 40px;
   align-items: center;
   align-content: center;
+
+  h3 {
+    font-weight: normal;
+    color: gray;
+  }
 }
 
 .login-code {
   display: flex;
   align-items: center;
+  position: center;
+  justify-content: center;
+  justify-items: center;
+}
+
+.img-code{
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .login-app {
   display: flex;
   justify-content: center;
+  padding-top: 20px;
 }
 
-/*公司*/
-.login-com {
-  text-align: center;
-  color: gray;
+.login-box {
+  padding-top: 20px;
 }
+
+
+.login-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  h1 {
+    font-weight: bold;
+    color: white;
+    padding-left: 20px;
+  }
+}
+
+.login-footer {
+  text-align: center;
+
+  h3 {
+    font-weight: normal;
+    color: gray;
+  }
+}
+
 </style>
