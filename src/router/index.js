@@ -5,9 +5,16 @@ Vue.use(Router);
 export const constantRoutes = [
     {
         path: "/",
+        hidden: true,
+        redirect: '/login'
+    },
+
+    {
+        path: "/login",
         component: () => import("@/views/login"),
         hidden: true
     },
+
     {
         path: "/home",
         component: () => import("@/views/home"),
@@ -24,6 +31,7 @@ export const constantRoutes = [
 const createRouter = () =>
     new Router({
         scrollBehavior: () => ({ y: 0 }),
+        mode:"history",
         routes: constantRoutes
     });
 

@@ -1,5 +1,5 @@
-const config = {
-    BASE_URL:""
+const global = {
+    BASE_URL:''
 }
 
-export default config
+export default global

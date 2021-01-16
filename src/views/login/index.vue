@@ -40,17 +40,17 @@
               </div>
 
               <el-form-item>
-                <el-button type="primary" v-on:click="submitForm('form')" style="width: 100%">登录</el-button>
+                <el-button type="primary" v-on:click="submitForm('form')" style="width: 100% ">登录</el-button>
               </el-form-item>
             </el-form>
           </div>
 
           <div class="login-scan">
-            <img class="login-qrcode" src="@/assets/images/login/qrcode.jpg"/>
+            <img class="login-qrcode" v-bind:src="qrcode"/>
             <h3 style="text-align: center">扫描二维码下载App</h3>
             <div class="login-app">
-              <el-button type="primary">APP民用</el-button>
-              <el-button type="warning">APP警用</el-button>
+              <el-button type="primary" v-on:click="onUsual">APP民用</el-button>
+              <el-button type="warning" v-on:click="onPolice">APP警用</el-button>
             </div>
           </div>
         </div>
@@ -72,8 +72,9 @@ export default {
   name: 'login',
   data() {
     return {
-      identifyCode:'1234',
-      identifyCodes:'1234567890',
+      identifyCode:'QWER',
+      identifyCodes:'QWERTYUIOPASDFGHJKLZXCVBNM',
+      qrcode: require('@/assets/images/login/qrcode.jpg'),
       form: {
         userName: '',
         passWord: '',
@@ -92,7 +93,7 @@ export default {
         code: [{required: true, validator: function (rule,value, callback){
             if(!value){
               return callback(new Error('请输入验证码'))
-            }else if(this.identifyCode === '1234'){
+            }else if(this.identifyCode === 'QWER'){
               callback()
             }else {
               return callback(new Error('验证码不正确'))
@@ -100,6 +101,10 @@ export default {
           },trigger: 'blur'}]
       }
     }
+  },
+
+  created() {
+
   },
   mounted() {
     // 刷新页面就生成随机验证码
@@ -139,6 +144,13 @@ export default {
           return false
         }
       })
+    },
+
+    onUsual(){
+      this.qrcode = require('@/assets/images/login/qrcode.jpg')
+    },
+    onPolice(){
+      this.qrcode = require('@/assets/images/login/qrcode.jpg')
     }
   }
 }

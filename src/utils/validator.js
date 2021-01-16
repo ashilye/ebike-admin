@@ -22,3 +22,4 @@ export function validatorPhoneNumber (rule, value, callback) {
 
 
 
+
